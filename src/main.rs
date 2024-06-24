@@ -4,6 +4,10 @@ use rand::Rng;
 enum ActivationFunction {
     Sigmoid,
     Relu,
+    Identity,
+    Tanh,
+    Arctan,
+    Softplus,
 }
 
 impl ActivationFunction {
@@ -11,6 +15,10 @@ impl ActivationFunction {
         match self {
             ActivationFunction::Sigmoid => 1.0 / (1.0 + (-x).exp()),
             ActivationFunction::Relu => if x > 0.0 { x } else { 0.0 },
+            ActivationFunction::Identity => {x},
+            ActivationFunction::Tanh => { 2.0 / (1.0 + (2.0 * -x).exp()) - 1.0 },
+            ActivationFunction::Arctan => x.atan(),
+            ActivationFunction::Softplus => (1.0 + x.exp()).log(1.0_f64.exp()),
         }
     }
 
@@ -27,6 +35,13 @@ impl ActivationFunction {
             ActivationFunction::Relu => {
                 if x > 0.0 { 1.0 } else { 0.0 }
             },
+            ActivationFunction::Identity => {1.0},
+            ActivationFunction::Tanh => {
+                let tanh = self.apply(x);
+                1.0 - tanh.powi(2)
+            },
+            ActivationFunction::Arctan => 1.0 / (x.powi(2)+1.0),
+            ActivationFunction::Softplus => 1.0 / (1.0 + (-x).exp()),
         }
     }
 
@@ -170,7 +185,7 @@ impl NeuralNetwork {
 fn main() {
     let layers = vec![
         Layer::Input { shape: (2, 1) }, 
-        Layer::Dense { units: 32, activation_function: ActivationFunction::Relu }, 
+        Layer::Dense { units: 32, activation_function: ActivationFunction::Tanh }, 
         Layer::Dense { units: 1, activation_function: ActivationFunction::Sigmoid }
     ];
         
